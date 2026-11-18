@@ -9,6 +9,54 @@
     yearEl.textContent = new Date().getFullYear();
   }
 
+  // ---- Light/dark mode ----
+  // Without a saved choice the page follows the system setting (handled in CSS).
+  // Clicking the button sets data-theme on <html> and remembers the choice.
+  var root = document.documentElement;
+  var themeToggle = document.querySelector('.theme-toggle');
+  var systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  var STORAGE_KEY = 'theme';
+
+  // Storage can be blocked (e.g. private windows), so never let it break the page
+  function loadTheme() {
+    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  }
+  function saveTheme(theme) {
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch (e) { /* ignore */ }
+  }
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || (systemDark.matches ? 'dark' : 'light');
+  }
+
+  function updateToggleLabel() {
+    if (themeToggle) {
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      themeToggle.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+    }
+  }
+
+  var savedTheme = loadTheme();
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    root.setAttribute('data-theme', savedTheme);
+  }
+  updateToggleLabel();
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      // Fade the colours only for this switch, not when the page loads
+      root.classList.add('theme-animating');
+      setTimeout(function () { root.classList.remove('theme-animating'); }, 400);
+      root.setAttribute('data-theme', next);
+      saveTheme(next);
+      updateToggleLabel();
+    });
+  }
+
+  // Keep the button label right if the system setting changes while the page is open
+  systemDark.addEventListener('change', updateToggleLabel);
+
   // ---- Profile photo: show the initial instead if images/tobias.jpg is missing ----
   var photo = document.querySelector('.hero-photo img');
   function showPhotoFallback() {
