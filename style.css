@@ -11,6 +11,10 @@
   --color-accent: #0e6e6b;          /* deep teal */
   --color-accent-contrast: #ffffff;
   --color-accent-soft: #e2efed;     /* pale teal for backgrounds */
+  --color-header-bg: rgba(250, 250, 249, 0.92);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  color-scheme: light;
 
   /* Inter is loaded from Google Fonts; the rest are fallbacks if it can't load */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -25,6 +29,47 @@
   --max-width: 1080px;
   --max-width-narrow: 720px;
   --header-height: 64px;
+}
+
+/* ==========================================================================
+   Dark mode
+   - Follows the Mac/phone setting by default (works even without JavaScript).
+   - The toggle button sets data-theme="light" or "dark" on <html> to override it.
+   The dark colours are listed twice because CSS can't share them between the
+   two cases.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #141615;
+    --color-bg-alt: #1b1e1d;
+    --color-surface: #222624;
+    --color-text: #eceeed;
+    --color-text-muted: #a7adaa;
+    --color-border: #333836;
+    --color-accent: #4fbab2;        /* lighter teal, readable on dark */
+    --color-accent-contrast: #0b1d1c;
+    --color-accent-soft: #15302d;
+    --color-header-bg: rgba(20, 22, 21, 0.92);
+    --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #141615;
+  --color-bg-alt: #1b1e1d;
+  --color-surface: #222624;
+  --color-text: #eceeed;
+  --color-text-muted: #a7adaa;
+  --color-border: #333836;
+  --color-accent: #4fbab2;
+  --color-accent-contrast: #0b1d1c;
+  --color-accent-soft: #15302d;
+  --color-header-bg: rgba(20, 22, 21, 0.92);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  color-scheme: dark;
 }
 
 /* ==========================================================================
@@ -48,6 +93,12 @@ body {
   line-height: 1.65;
   color: var(--color-text);
   background: var(--color-bg);
+}
+
+/* Smooth colour change, only while the light/dark button is used
+   (app.js adds this class briefly), so the page doesn't fade on load */
+:root.theme-animating body {
+  transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h2, h3 {
@@ -88,7 +139,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(250, 250, 249, 0.92);
+  background: var(--color-header-bg);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
 }
@@ -96,14 +147,59 @@ a {
 .header-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-md);
   height: var(--header-height);
 }
 
+/* Pushes everything else in the header to the right */
 .brand {
+  margin-right: auto;
   font-weight: 700;
   font-size: 1.125rem;
   text-decoration: none;
+}
+
+/* Light/dark mode button: shows a moon in light mode, a sun in dark mode */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-accent);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle .icon-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
 }
 
 .site-nav ul {
@@ -424,7 +520,7 @@ a {
 
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card);
 }
 
 .card-tag {
@@ -537,8 +633,10 @@ a {
     --space-xl: 3rem;
   }
 
+  /* Menu button sits at the far right, after the light/dark button */
   .nav-toggle {
     display: flex;
+    order: 1;
   }
 
   /* Photo above the text on small screens */
