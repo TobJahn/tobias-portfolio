@@ -8,10 +8,12 @@
   --color-text: #1f1f1e;
   --color-text-muted: #5f5e5a;
   --color-border: #e2e0dc;
-  --color-accent: #2f2f2d;
+  --color-accent: #0e6e6b;          /* deep teal */
   --color-accent-contrast: #ffffff;
+  --color-accent-soft: #e2efed;     /* pale teal for backgrounds */
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Inter is loaded from Google Fonts; the rest are fallbacks if it can't load */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --space-xs: 0.5rem;
   --space-sm: 1rem;
@@ -156,16 +158,21 @@ a {
 /* ==========================================================================
    Hero
    ========================================================================== */
+/* Soft teal glow in the top-right corner behind the intro */
 .hero {
   padding: var(--space-xl) 0;
   border-bottom: 1px solid var(--color-border);
+  background:
+    radial-gradient(ellipse at 85% 0%, var(--color-accent-soft) 0%, transparent 60%),
+    var(--color-bg);
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.8rem;
-  color: var(--color-text-muted);
+  font-weight: 600;
+  color: var(--color-accent);
   margin-bottom: var(--space-xs);
 }
 
@@ -201,8 +208,10 @@ a {
   margin: 0;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--color-bg-alt);
-  border: 1px solid var(--color-border);
+  background: var(--color-accent-soft);
+  /* Thin teal ring with a small gap around the photo */
+  outline: 2px solid var(--color-accent);
+  outline-offset: 6px;
 }
 
 .hero-photo img {
@@ -224,6 +233,33 @@ a {
   place-items: center;
   font-size: 6rem;
   font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* Key numbers under the intro */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: var(--space-lg);
+  list-style: none;
+  margin: var(--space-lg) 0 0;
+  padding: var(--space-md) 0 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.stat-number {
+  display: block;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-accent);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.35;
   color: var(--color-text-muted);
 }
 
@@ -393,9 +429,10 @@ a {
 
 .card-tag {
   font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   margin-bottom: var(--space-xs);
 }
 
@@ -428,6 +465,48 @@ a {
 
 .site-footer p {
   margin: 0;
+}
+
+/* ==========================================================================
+   Back-to-top button (app.js adds .is-visible after scrolling down)
+   ========================================================================== */
+.back-to-top {
+  position: fixed;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.back-to-top:hover {
+  opacity: 0.9;
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.back-to-top svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* ==========================================================================
@@ -475,6 +554,15 @@ a {
 
   .hero-photo.no-photo::after {
     font-size: 3.5rem;
+  }
+
+  .stats {
+    gap: var(--space-md);
+  }
+
+  .back-to-top {
+    right: var(--space-sm);
+    bottom: var(--space-sm);
   }
 
   .site-nav {

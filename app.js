@@ -52,6 +52,16 @@
     });
   }
 
+  // ---- Back-to-top button: show it once the visitor has scrolled down a bit ----
+  var backToTop = document.querySelector('.back-to-top');
+  if (backToTop) {
+    var updateBackToTop = function () {
+      backToTop.classList.toggle('is-visible', window.scrollY > 600);
+    };
+    window.addEventListener('scroll', updateBackToTop, { passive: true });
+    updateBackToTop(); // in case the page was reloaded halfway down
+  }
+
   // Older browsers without IntersectionObserver simply skip the effects below
   if (!('IntersectionObserver' in window)) {
     return;
